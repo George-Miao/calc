@@ -1,0 +1,61 @@
+// Global ignore
+WHITESPACE = _{ " " | "\t" | NEWLINE }
+COMMENT    = _{ "//" ~ (!NEWLINE ~ ANY)* ~ ( NEWLINE | EOI ) }
+
+// Atoms
+at          = _{ "@" }
+dot         = _{ "." }
+comma       = _{ "," }
+quote       = _{ "\"" }
+dollar      = _{ "$" }
+backquote   = _{ "`" }
+left_paren  = _{ "(" }
+right_paren = _{ ")" }
+left_brace  = _{ "{" }
+right_brace = _{ "}" }
+semicolon   = _{ ";" }
+underscore  = _{ "_" }
+
+// Literals
+fraction = _{ dot ~ ASCII_DIGIT* }
+number   = @{ ASCII_DIGIT* ~ fraction? }
+literal  = {
+  number
+}
+
+// Reference
+reference = @{ at ~ ASCII_DIGIT+ }
+
+// Ops
+neg           = { "-" }
+unary_op      = { neg }
+unary_op_expr = { unary_op ~ expr }
+
+add            = { "+" }
+sub            = { "-" }
+mul            = { "*" }
+div            = { "/" }
+rem            = { "%" }
+eq             = { "==" }
+neq            = { "!=" }
+lt             = { "<" }
+gt             = { ">" }
+ge             = { ">=" }
+le             = { "<=" }
+binary_op      = { add | sub | mul | div | rem | eq | neq | lt | gt | ge | le }
+binary_op_expr = { nominal_expr ~ binary_op ~ expr }
+
+// Sentences
+// Exprs that does not have itself in first place
+paren_expr = { left_paren ~ expr ~ right_paren }
+nominal_expr = {
+  unary_op_expr
+  | paren_expr
+  | reference
+  | literal
+}
+expr = {
+  binary_op_expr
+  | nominal_expr
+}
+
